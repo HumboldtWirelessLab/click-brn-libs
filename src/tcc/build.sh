@@ -15,6 +15,7 @@ if [ ! -d tcc-0.9.26 ]; then
 fi
 
 (cd tcc-0.9.26; ./configure --prefix=$BRN_TOOLS_PATH/click-brn-libs; make; make install)
+(cd tcc-0.9.26; ./configure --prefix=$BRN_TOOLS_PATH/click-brn-libs; DISABLE_STATIC=1 make; DISABLE_STATIC=1 make install)
 #mv 
 
 exit 0
