@@ -81,17 +81,36 @@
  * MEM_SIZE: the size of the heap memory. If the application will send
  * a lot of data that needs to be copied, this should be set high.
  */
+
+//taken from http://stackoverflow.com/questions/10734247/performance-issues-when-using-the-raw-tcp-api-of-lwip
+#ifdef STACKOVERFLOW_TEST
+
+#define MEM_SIZE                        (1024 * 1024) /* 1MiB */
+#define MEMP_NUM_PBUF                   1024
+#define MEMP_NUM_TCP_PCB                32
+#define PBUF_POOL_SIZE                  1024
+#define TCP_MSS                         1460
+#define TCP_WND                         (4*TCP_MSS)
+#define TCP_SND_BUF                     65535
+#define TCP_OVERSIZE                    TCP_MSS
+#define TCP_SND_QUEUELEN                512
+#define MEMP_NUM_TCP_SEG                512
+
+#else
+
 //#define MEM_SIZE                        1600
 #define MEM_SIZE                        256000
-
+//#define TCP_MSS                         1460
+//#define TCP_SND_BUF                     65536
 #define TCP_SND_BUF                     (16 * TCP_MSS)
 #define TCP_SND_QUEUELEN                40
 #define MEMP_NUM_TCP_SEG                TCP_SND_QUEUELEN
-#define TCP_WND                         (10 * TCP_MSS)
+#define TCP_WND                         (4 * TCP_MSS)
 #define LWIP_WND_SCALE                  1
-#define TCP_RCV_SCALE                   0
+#define TCP_RCV_SCALE                   2
 #define PBUF_POOL_SIZE                  40000 // pbuf tests need ~200KByte
 
+#endif
 /*
    ------------------------------------------------
    ---------- Internal Memory Pool Sizes ----------
@@ -102,7 +121,9 @@
  * If the application sends a lot of data out of ROM (or other static memory),
  * this should be set high.
  */
+#ifndef MEMP_NUM_PBUF
 #define MEMP_NUM_PBUF                   16
+#endif
 
 /**
  * MEMP_NUM_RAW_PCB: Number of raw connection PCBs
@@ -121,7 +142,9 @@
  * MEMP_NUM_TCP_PCB: the number of simulatenously active TCP connections.
  * (requires the LWIP_TCP option)
  */
+#ifndef MEMP_NUM_TCP_PCB
 #define MEMP_NUM_TCP_PCB                4
+#endif
 
 /**
  * MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP connections.
