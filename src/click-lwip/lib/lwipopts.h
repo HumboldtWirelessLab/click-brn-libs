@@ -98,19 +98,44 @@
 
 #else
 
-//#define MEM_SIZE                        1600
+//#define TUNINGTEST
+
+#ifdef TUNINGTEST
+
 #define MEM_SIZE                        256000
-//#define TCP_MSS                         1460
-//#define TCP_SND_BUF                     65536
-#define TCP_SND_BUF                     (16 * TCP_MSS)
-#define TCP_SND_QUEUELEN                40
+#define TCP_MSS                         1460
+
+#define TCP_WND                         (16 * TCP_MSS)
+#define TCP_SND_BUF                     (32 * TCP_MSS)
+//#define TCP_SND_QUEUELEN                (4 * TCP_SND_BUF/TCP_MSS)
+//#define TCP_OVERSIZE                    TCP_MSS
+
 #define MEMP_NUM_TCP_SEG                TCP_SND_QUEUELEN
-#define TCP_WND                         (4 * TCP_MSS)
+#define LWIP_WND_SCALE                  1
+#define TCP_RCV_SCALE                   4
+
+#define PBUF_POOL_SIZE                  32768 // pbuf tests need ~200KByte
+
+#else
+
+//#define MEM_SIZE                        1600
+#define MEM_SIZE                        512000
+//#define TCP_MSS                         1460
+#define TCP_MSS                         536
+//#define TCP_SND_BUF                     65536
+#define TCP_WND                         (8 * TCP_MSS)
+#define TCP_SND_BUF                     (2 * TCP_MSS)
+#define TCP_SND_QUEUELEN                64
+#define MEMP_NUM_TCP_SEG                TCP_SND_QUEUELEN
+
 #define LWIP_WND_SCALE                  1
 #define TCP_RCV_SCALE                   2
 #define PBUF_POOL_SIZE                  40000 // pbuf tests need ~200KByte
 
 #endif
+#endif
+
+#define TCP_TMR_INTERVAL 100
 /*
    ------------------------------------------------
    ---------- Internal Memory Pool Sizes ----------
