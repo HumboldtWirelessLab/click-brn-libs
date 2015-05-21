@@ -86,6 +86,7 @@ install:
 	cp -r $(LWIPARCH)/include/* ../../../include
 	cp -r liblwip.so ../../../lib
 	cp -r lwipopts.h ../../../include
+	cp -r ../brn-lwip-contrib/ports/unix/include/* ../../../include
 
 #	-I$(LWIPDIR)/include/ipv4 -I$(LWIPDIR)/include/ipv6 -I$(LWIPDIR) -I.
 
