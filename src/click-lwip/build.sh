@@ -17,11 +17,18 @@ fi
 
 if [ ! -d brn-lwip ]; then
   ${GIT} clone http://git.savannah.gnu.org/cgit/lwip.git brn-lwip
+else
+  (cd brn-lwip; git checkout master; git pull)
 fi
 
 if [ ! -d brn-lwip-contrib ]; then
   ${GIT} clone http://git.savannah.gnu.org/cgit/lwip/lwip-contrib.git brn-lwip-contrib
+else
+  (cd brn-lwip-contrib; git checkout master; git pull)
 fi
+
+(cd brn-lwip; ${GIT} branch -d brn; git checkout -b brn 6ca8bc4037fcdb80a9e6bf2a6f09061fc721face)
+(cd brn-lwip-contrib; ${GIT} branch -d brn; git checkout -b brn ffd674283b533c0f5b7fbf4771814ebd518b0c57)
 
 (cd lib; make)
 (cd lib; make install)

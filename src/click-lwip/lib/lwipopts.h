@@ -114,23 +114,26 @@
 #define LWIP_WND_SCALE                  1
 #define TCP_RCV_SCALE                   4
 
-#define PBUF_POOL_SIZE                  32768 // pbuf tests need ~200KByte
+/*pbuf tests need ca 200KByte*/
+#define PBUF_POOL_SIZE                  32768 
 
 #else
 
 //#define MEM_SIZE                        1600
 #define MEM_SIZE                        512000
 //#define TCP_MSS                         1460
-#define TCP_MSS                         536
-//#define TCP_SND_BUF                     65536
-#define TCP_WND                         (8 * TCP_MSS)
-#define TCP_SND_BUF                     (2 * TCP_MSS)
-#define TCP_SND_QUEUELEN                64
-#define MEMP_NUM_TCP_SEG                TCP_SND_QUEUELEN
+#define TCP_MSS                            536
+//#define TCP_MSS                          700
+//#define TCP_SND_BUF                    65536
+#define TCP_WND                  (8 * TCP_MSS)
+#define TCP_SND_BUF              (2 * TCP_MSS)
+#define TCP_SND_QUEUELEN                    64
+#define MEMP_NUM_TCP_SEG      TCP_SND_QUEUELEN
 
-#define LWIP_WND_SCALE                  1
-#define TCP_RCV_SCALE                   2
-#define PBUF_POOL_SIZE                  40000 // pbuf tests need ~200KByte
+/*pbuf tests need ~200KByte*/
+#define LWIP_WND_SCALE                       1
+#define TCP_RCV_SCALE                        2
+#define PBUF_POOL_SIZE                   40000
 
 #endif
 #endif
