@@ -2,3 +2,12 @@ bin
 include
 lib
 share
+src/tinyxml/tinyxml
+src/tcc/tcc-0.9.26
+src/openann/eigen/
+src/openann/
+src/click-lwip/brn-lwip
+src/click-lwip/brn-lwip-contrib/
+src/tcc/tcc-0.9.26.tar.bz2
+src/tinyxml/tinyxml_2_6_2.zip
+src/tinyxml2/tinyxml2/
