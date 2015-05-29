@@ -15,7 +15,7 @@ if [ ! -d tinyxml2 ]; then
 fi
 
 cp Makefile.lib tinyxml2
-(cd tinyxml2; make -f Makefile.lib)
+(cd tinyxml2; CFLAGS="-fpic" make -f Makefile.lib)
 (cd tinyxml2; make -f Makefile.lib install)
 
 
