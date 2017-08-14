@@ -16,6 +16,6 @@ fi
 
 (cd tcc-0.9.26; ./configure --prefix=$BRN_TOOLS_PATH/click-brn-libs; make; make install)
 (cd tcc-0.9.26; ./configure --prefix=$BRN_TOOLS_PATH/click-brn-libs; make clean; DISABLE_STATIC=1 make; DISABLE_STATIC=1 make install)
-#mv 
+#mv
 
 exit 0
