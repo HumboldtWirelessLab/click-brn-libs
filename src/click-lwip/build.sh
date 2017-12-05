@@ -16,13 +16,13 @@ if [ "x$1" = "xclean" ]; then
 fi
 
 if [ ! -d brn-lwip ]; then
-  ${GIT} clone http://git.savannah.gnu.org/cgit/lwip.git brn-lwip
+  ${GIT} clone https://git.savannah.gnu.org/cgit/lwip.git brn-lwip
 #else
 #  (cd brn-lwip; git checkout master; git pull)
 fi
 
 if [ ! -d brn-lwip-contrib ]; then
-  ${GIT} clone http://git.savannah.gnu.org/cgit/lwip/lwip-contrib.git brn-lwip-contrib
+  ${GIT} clone https://git.savannah.gnu.org/cgit/lwip/lwip-contrib.git brn-lwip-contrib
 #else
 #  (cd brn-lwip-contrib; git checkout master; git pull)
 fi
