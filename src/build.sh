@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECTS="click-lwip tcc tinyxml tinyxml2 openann"
+PROJECTS="click-lwip cuneiform tcc tinyxml tinyxml2 openann"
 
 if [ "x$1" = "xrealclean" ]; then
   for i in $PROJECTS; do
