@@ -35,11 +35,11 @@ fi
 echo "Build cuneiform"
 
 if [ ! -f cuneiform/rebar3 ]; then
-  (cp rebar3/rebar3 cuneiform/)
+  cp rebar3/rebar3 cuneiform
 fi
 
-(cd cuneiform; PATH=$PATH:. make)
+(cd cuneiform; ./rebar3 escriptize)
 
-(cp cuneiform/_build/default/bin/cuneiform $BRN_TOOLS_PATH/click-brn-libs/bin/)
+cp cuneiform/_build/default/bin/cuneiform $BRN_TOOLS_PATH/click-brn-libs/bin/
 
 exit 0
