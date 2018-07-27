@@ -296,10 +296,13 @@ char* create_function_wrapper(char* wrapper_name, src_function* s_f) {
     char* bi = buffer;
     f_header* f_h = s_f->header;
 
-    char wheader[100];
+    /*char wheader[100];
     sprintf(wheader, "t_value %s(t_value* param) {\nt_value result;\n", wrapper_name);
     sprintf(bi, wheader);
-    bi += strlen(wheader);
+    bi += strlen(wheader);*/
+
+    sprintf(bi,"t_value %s(t_value* param) {\nt_value result;\n", wrapper_name);
+    bi += strlen(bi);
     //return type void
     if(f_h->return_type == VOID) {
         //printf("return type == VOID\n");

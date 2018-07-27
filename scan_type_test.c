@@ -13,7 +13,7 @@
 #include "utile.h"
 
 void test_pointer(int* i_p, short* s_p, long* l_p, float* f_p, double* d_p, long double* ld_p, char* str) {
-    printf("i_p={%d ..}, s_p={%hd ..}, l_p={%ld ..}, f_p={%f ..}, d={%g ..}, ld_p={%Lg ..}, c_p=\"%s\"\n", i_p, s_p, l_p, f_p, d_p, ld_p, str);
+    printf("i_p={%d ..}, s_p={%hd ..}, l_p={%ld ..}, f_p={%f ..}, d={%g ..}, ld_p={%Lg ..}, c_p=\"%s\"\n", *i_p, *s_p, *l_p, *f_p, *d_p, *ld_p, str);
 }
 
 void test_types(int i, unsigned int u_i, short s, unsigned short u_s, long l, unsigned long u_l, float f, double d, long double ld, char c) {
