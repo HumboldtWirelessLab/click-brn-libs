@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="tiny_c" />
+		<Option pch_mode="2" />
+		<Option compiler="tcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/tiny_c" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="tcc" />
+				<Compiler>
+					<Add option="-std=c99" />
+					<Add directory="D:/Programme/tcc/libtcc" />
+				</Compiler>
+				<Linker>
+					<Add library="D:/Programme/tcc/libtcc.dll" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/tiny_c" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="tcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="buffered_reader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="buffered_reader.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="c_parameter_type.h" />
+		<Unit filename="c_source_data_functions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="c_source_data_functions.h" />
+		<Unit filename="c_source_data_types.h" />
+		<Unit filename="c_source_reader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="c_source_reader.h" />
+		<Unit filename="examples_test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="examples_test.h" />
+		<Unit filename="functions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="functions.h" />
+		<Unit filename="hashmap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hashmap.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pointer_test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pointer_test.h" />
+		<Unit filename="read_from_line.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="read_from_line.h" />
+		<Unit filename="reflection.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="reflection.h" />
+		<Unit filename="scan_command_line.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="scan_command_line.h" />
+		<Unit filename="scan_type_test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="scan_type_test.h" />
+		<Unit filename="utile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="utile.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

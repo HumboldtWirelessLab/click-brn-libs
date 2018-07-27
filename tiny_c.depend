@@ -1,0 +1,157 @@
+# depslib dependency file v1.0
+1530179390 source:h:\rempe\workspace_code_block\tiny_c\read_from_line.c
+	<stdio.h>
+	<stdlib.h>
+
+1532629327 source:h:\rempe\workspace_code_block\tiny_c\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	"reflection.h"
+	"hashmap.h"
+	"c_source_reader.h"
+	"c_source_data_functions.h"
+	"scan_command_line.h"
+	"utile.h"
+	"examples_test.h"
+	"scan_type_test.h"
+
+1513499220 d:\programme\tcc\libtcc\libtcc.h
+
+1532610248 source:h:\rempe\workspace_code_block\tiny_c\buffered_reader.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<ctype.h>
+	"buffered_reader.h"
+
+1530196424 h:\rempe\workspace_code_block\tiny_c\buffered_reader.h
+
+1532632966 source:h:\rempe\workspace_code_block\tiny_c\c_source_reader.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<ctype.h>
+	"c_source_reader.h"
+	"c_source_data_functions.h"
+	"buffered_reader.h"
+	"utile.h"
+
+1532630944 h:\rempe\workspace_code_block\tiny_c\c_source_reader.h
+	<stdbool.h>
+	"c_source_data_types.h"
+
+1532629755 source:h:\rempe\workspace_code_block\tiny_c\functions.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"functions.h"
+
+1532629755 h:\rempe\workspace_code_block\tiny_c\functions.h
+	"c_parameter_type.h"
+
+1531582106 h:\rempe\workspace_code_block\tiny_c\pointer_test.h
+
+1532612576 source:h:\rempe\workspace_code_block\tiny_c\pointer_test.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"pointer_test.h"
+
+1532612855 source:h:\rempe\workspace_code_block\tiny_c\examples_test.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<time.h>
+	<stdarg.h>
+	"functions.h"
+	"c_source_reader.h"
+	"pointer_test.h"
+	"examples_test.h"
+
+1531614007 h:\rempe\workspace_code_block\tiny_c\examples_test.h
+
+1532632905 h:\rempe\workspace_code_block\tiny_c\utile.h
+	"hashmap.h"
+
+1532633045 source:h:\rempe\workspace_code_block\tiny_c\utile.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<stdbool.h>
+	"c_source_reader.h"
+	"utile.h"
+
+1532628890 h:\rempe\workspace_code_block\tiny_c\c_source_data_types.h
+	<libtcc.h>
+	"c_parameter_type.h"
+
+1532610379 h:\rempe\workspace_code_block\tiny_c\c_source_data_functions.h
+	<stdbool.h>
+	"c_source_data_types.h"
+	"hashmap.h"
+
+1532629572 source:h:\rempe\workspace_code_block\tiny_c\c_source_data_functions.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"c_source_data_functions.h"
+	"utile.h"
+
+1531763359 source:h:\rempe\workspace_code_block\tiny_c\hashmap.c
+	"hashmap.h"
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"hashmap.h"
+
+1532619419 h:\rempe\workspace_code_block\tiny_c\hashmap.h
+
+1532539783 h:\rempe\workspace_code_block\tiny_c\reflection.h
+	<stdio.h>
+	"c_source_data_types.h"
+
+1532624325 source:h:\rempe\workspace_code_block\tiny_c\reflection.c
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	<ctype.h>
+	"reflection.h"
+	"c_source_data_functions.h"
+	"utile.h"
+
+1529502646 h:\rempe\workspace_code_block\tiny_c\read_from_line.h
+
+1532613418 source:h:\rempe\workspace_code_block\tiny_c\scan_type_test.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdbool.h>
+	"scan_type_test.h"
+	"c_source_data_functions.h"
+	"c_source_reader.h"
+	"scan_command_line.h"
+	"reflection.h"
+	"utile.h"
+
+1531952183 h:\rempe\workspace_code_block\tiny_c\scan_type_test.h
+
+1532024187 h:\rempe\workspace_code_block\tiny_c\scan_command_line.h
+	"c_source_data_types.h"
+	"utile.h"
+
+1532633010 source:h:\rempe\workspace_code_block\tiny_c\scan_command_line.c
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<stdbool.h>
+	<ctype.h>
+	"scan_command_line.h"
+	"c_source_data_functions.h"
+
+1532626662 h:\rempe\workspace_code_block\tiny_c\c_parameter_type.h
+

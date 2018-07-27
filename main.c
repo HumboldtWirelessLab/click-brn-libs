@@ -1,0 +1,287 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <time.h>
+
+#include "reflection.h"
+#include "hashmap.h"
+#include "c_source_reader.h"
+#include "c_source_data_functions.h"
+//#include "read_from_line.h"
+#include "scan_command_line.h"
+#include "utile.h"
+#include "examples_test.h"
+#include "scan_type_test.h"
+
+static const char QUIT[] = "quit";
+
+bool debug = false;
+bool user_debug = false;
+
+void print_help() {
+    printf("\nKommandos:\n-------------\n");
+    printf("help|-h                                  - Ausgabe der Kommandos\n");
+    printf("set debug true|false                     - Aktivieren oder Deaktivieren der Debug-Ausgaben\n");
+    printf("<c-source-file>                          - C-Datei die geladen werden soll, es wird versucht die Funktionen zu extrahieren (z.B. functions.c)\n");
+    printf("reload <c-source-file>                   - C-Datei die (erneut)geladen werden soll, alte Version wird entfernt\n");
+    printf("find <function-name>                     - Pruefen ob die Funktion bekannt ist (geladen wurde)\n");
+    printf("call <function-name> [param1 param2 ...] - Aufruf der Funktion mit entsprechenden Parameter, sofern verlangt.\n");
+    printf("test_functions|test_f                    - fuehrt ein paar Test-Funktionen aus (aus functions.c und pointer_test.c)\n");
+    printf("refection_test|ref_t                     - Es werden per Tiny-C Funktionen geladen und ausgefüht.\n");
+    printf("run_test_types|run_tt                    - Es wird die Funtion scan_params(..) getestet.\n");
+    printf("q|quit                                   - beendet das Programm\n");
+}
+
+int main()
+{
+    //reflection_test();
+    //test_functions();
+
+    int i, e, n; //size
+    //void *mem;
+    char * line;
+    src* c_src;
+    src* find_c_src;
+    src_function* s_f;
+    f_header* f_h;
+    tcc_function* func = load_readLine();
+    char* (*readLine)(FILE*) = func->f;
+    char f_name[100];
+    char space[20];
+    //char f_param[500];
+    char* lp;
+    //memory of source
+    map_t ht_src = hashmap_new();
+    //memory of functions
+    map_t ht_func = hashmap_new();
+    bool is_reload = false;
+
+    bool work = true;
+    print_help();
+    while(work) {
+        //printf("\n[while begin] press any key.... \n");
+        //getchar();
+        printf("\nWaiting for input:> ");
+        line = readLine(stdin);
+        //line = readLine();
+        if(strlen(line) == 0) continue;
+        switch(line[0]) {
+            case '-':
+                if(strcmp(line, "-h") == 0) {
+                    print_help();
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'c':
+                if((e = sscanf(line, "call%[ ]%[^ ]", space, f_name)) > 0) {
+                    printf("[%d] call function: %s\n", e, f_name);
+                    lp = line + 4 + strlen(space) + strlen(f_name);
+                    if(hashmap_get(ht_func, f_name, (void**)&s_f) == MAP_MISSING) printf("Info: not found !!\n");
+                    else {
+                        print_reduced_src_function(s_f, "");
+                        f_h = s_f->header;
+                        t_value* param = scan_param(lp, s_f, user_debug);
+                        print_t_value(param, f_h->parameter_n, f_h->parameter_types, "   ");
+                        //call function with param
+                        t_value result = s_f->func(param);
+                        print_t_value(&result, 1, &(f_h->return_type), "result:");
+                        //free param/return values
+                        printf("[call] free params ...\n");
+                        free_t_value_array(param, f_h->parameter_n, f_h->parameter_types);
+                        if(f_h->return_is_ref_type == true) {
+                            printf("[call] don't free return value, can reference an input parameter ...\n");
+                        } else {
+                            printf("[call] free return value ...\n");
+                            free_t_value(&result, &(f_h->return_type), false);
+                        }
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'f':
+                if(strcmp(line, "find") == 0) {
+                    printf("Info: all loaded functions ...\n");
+                    print_functions_ht(ht_func);
+                    free(line);
+                    continue;
+                } else if((e = sscanf(line, "find%[ ]%[^ ]", space, f_name)) > 0) {
+                    printf("[%d] find function: %s\n", e, f_name);
+                    if(hashmap_get(ht_func, f_name, (void**)&s_f) == MAP_MISSING) printf("Info: not found !!\n");
+                    else {
+                        print_src_function(s_f, "");
+                        //print_src_code_ref(s_f->src_r, "function->", "   ");
+                        //print_src_code_ref(s_f->header->src_r, "header->", "   ");
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'h':
+                if(strcmp(line, "help") == 0) {
+                    print_help();
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'q':
+                if(strlen(line) == 1 || strcmp(line, QUIT) == 0) {
+                    work = false;
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'r':
+                if(strcmp(line, "reflection_test") == 0 || strcmp(line, "ref_t") == 0) {
+                    reflection_test();
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "run_test_types") == 0 || strcmp(line, "run_tt") == 0) {
+                    run_test_types();
+                    free(line);
+                    continue;
+                } else if((e = sscanf(line, "reload%[ ]%[^ ]", space, f_name)) > 0) {
+                    printf("[%d] reload src: %s\n", e, f_name);
+                    free(line);
+                    line = copy_string(f_name);
+                    is_reload = true;
+                }
+                break;
+            case 's':
+                if(strcmp(line, "set debug true") == 0) {
+                    if(!user_debug) {
+                        user_debug = true;
+                        printf("info: debug enabled\n");
+                    }
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "set debug false") == 0) {
+                    if(user_debug) {
+                        user_debug = false;
+                        printf("info: debug disabled\n");
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
+            case 't':
+                if(strcmp(line, "test_functions") == 0 || strcmp(line, "test_f") == 0) {
+                    test_functions();
+                    free(line);
+                    continue;
+                }
+                break;
+        }
+
+        c_src = read_source(line, user_debug);
+        if(c_src == NULL) {
+            printf("info: unkown/incomplete command or file [%s]\n", line);
+            free(line);
+            continue;
+        }
+        n = hashmap_get(ht_src, c_src->name, (void**)&find_c_src);
+        //printf("[MAP_MISSING = %d, MAP_OK = %d, MAP_OMEM = %d] found = %d\n", MAP_MISSING, MAP_OK, MAP_OMEM, n);
+        if(n == MAP_OK) {
+            if(is_reload) {
+                is_reload = false;
+                printf("[reload] remove old version!!\n");
+                for(i=0; i < find_c_src->n; ++i) {
+                    s_f = find_c_src->functions[i];
+                    if(s_f->state != NULL) {
+                        if(hashmap_remove(ht_func, s_f->header->name) == MAP_OK) printf("[reload][%d] removed %s \n", i, s_f->header->name);
+                    }
+                }
+                if(hashmap_remove(ht_src, find_c_src->name) == MAP_OK) printf("[reload] removed src %s \n", find_c_src->name);
+                free_src(find_c_src, true, debug);
+                printf("[reload] load new version:\n\n");
+            } else {
+                printf("Info: %s is already loaded!\n", c_src->name);
+                free_src(c_src, false, debug);
+                free(line);
+                continue;
+            }
+        }
+
+        printf("echo: %s\n",line);
+        //is existing file
+        //s_c = c_src->src;
+        if(user_debug) {
+            printf("\nsrc(n = %d, allocated_n = %d, start_pos = %d)\n[\n", c_src->n, c_src->allocated_n, c_src->src_start_pos);
+            print_string((c_src->src)->src, "   ");
+            printf("]\n");
+        }
+
+        scan_c_source(c_src, c_src->src_start_pos, (c_src->src)->length, false);
+        n = 0;
+        if(load_functions(c_src, user_debug) > 0) {
+            //add loaded functions to hashtable
+            printf("\nsrc(n = %d, allocated_n = %d): \n", c_src->n, c_src->allocated_n);
+            for(i=0; i<c_src->n; ++i) {
+                s_f = c_src->functions[i];
+                if(s_f->state != NULL) {
+                    hashmap_put(ht_func, get_name(s_f), s_f);
+                    printf("Added[%d:%d]: %s\n", i, ++n, get_name(s_f));
+                } else {
+                    printf("Skipped[%d]: %s\n", i, get_name(s_f));
+                }
+            }
+        } else {
+            printf("INFO: load_functions returned with <= 0, therefore there are no functions to add or an problem occured!\n");
+        }
+
+
+        /*printf("\nsrc(n = %d, allocated_n = %d): \n", c_src->n, c_src->allocated_n);
+        for(i=0, n=0; i<c_src->n; ++i) {
+            if(has_unkown_types(c_src->functions[i]) == false) {
+                hashmap_put(ht_func, get_name(c_src->functions[i]), c_src->functions[i]);
+                printf("Added[%d:%d]: %s", i, ++n, (user_debug ? "\n" : ""));
+                if(user_debug) print_src_function(c_src->functions[i], "   ");
+                else print_reduced_src_function(c_src->functions[i], "");
+                print_string(create_function_wrapper("fwrapper", c_src->functions[i]), "   ");
+            } else {
+                //printf("Skipped[%d]: %s", i, (user_debug ? "\n" : ""));
+                //if(user_debug) print_src_function(c_src->functions[i], "   ");
+                //else print_reduced_src_function(c_src->functions[i], "");
+                printf("Skipped[%d]: \n", i);
+                print_src_function(c_src->functions[i], "   ");
+            }
+        }*/
+        /*for(i=0; i < c_src->n; ++i) {
+            hashmap_put(ht_func, get_name(c_src->functions[i]), c_src->functions[i]);
+            printf("\n%s\n", create_function_wrapper("fwrapper", c_src->functions[i]));
+
+            //e = hashmap_get(ht_func, get_name(c_src->functions[i]), &s_f);
+            //printf("add[%d]: %s\n", e, get_name(s_f));
+        }*/
+
+        if(n > 0) {
+            hashmap_put(ht_src, c_src->name, c_src);
+            printf("\nInfo: cached %d functions [src.name = %s]\n", hashmap_length(ht_func), c_src->name);
+        } else {
+            free_src(c_src, true, debug);
+            printf("Info: no suitable function found/added!\n");
+        }
+        //free_src(c_src, false, false);
+
+        free(line);
+        //printf("\n[free line] press any key.... \n");
+        //getchar();
+    }
+    printf("\ngood bye..\n");
+
+    //Funktionsspeicher freigeben
+    printf("free src_function ht:\n");
+    free_functions_ht(ht_func, debug);
+    //Src-Speicher freigeben
+    printf("free src ht:\n");
+    free_src_ht(ht_src, false, debug);
+    //clean TCCState
+    free_tcc_function(func);
+
+    return 0;
+}
+
+
+
