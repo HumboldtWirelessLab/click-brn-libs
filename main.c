@@ -30,7 +30,7 @@ void print_help() {
     printf("test_functions|test_f                    - fuehrt ein paar Test-Funktionen aus (aus functions.c und pointer_test.c)\n");
     printf("refection_test|ref_t                     - Es werden per Tiny-C Funktionen geladen und ausgefüht.\n");
     printf("run_test_types|run_tt                    - Es wird die Funtion scan_params(..) getestet.\n");
-    printf("q|quit                                   - beendet das Programm\n");
+    printf("q|%s                                   - beendet das Programm\n", QUIT);
 }
 
 int main()
