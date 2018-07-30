@@ -1,3 +1,5 @@
+include makefile.local
+
 # DEBUG can be set to YES to include debugging info, or NO otherwise
 DEBUG          := NO
 
@@ -13,7 +15,7 @@ RANLIB := ranlib
 DEBUG_CFLAGS     := -Wall -Wno-format -g -DDEBUG
 RELEASE_CFLAGS   := -Wall -Wno-unknown-pragmas -Wno-format -O3
 
-TCCBASE          := /usr/src/develop/BerlinRoofNet/brn-tools/click-brn-libs/
+#TCCBASE         := /Pfad/zu/tcc
 INCLUDE_FLAGS    := -I${TCCBASE}/include
 LIB_FLAGS        := -L${TCCBASE}/lib -ltcc -ldl -lc
 
@@ -60,7 +62,7 @@ ${LIB_OUTPUT}: ${LIB_OBJS}
 
 lib: ${LIB_OUTPUT}
 
-${OUTPUT}: lib ${OBJS}
+${OUTPUT}: ${OBJS} ${LIB_OUTPUT}
 	${LD} -o $@ ${LDFLAGS} ${OBJS} ${LIB_OUTPUT} ${LIBS} ${EXTRA_LIBS}
 
 #****************************************************************************
@@ -69,15 +71,8 @@ ${OUTPUT}: lib ${OBJS}
 %.o : %.cpp
 	${CXX} -c ${CXXFLAGS} ${INCS} $< -o $@
 
-%.o : %.c
-	${CC} -c ${CFLAGS} ${INCS} $< -o $@
-
-# Rules for compiling source files to object files
-%.o : %.cpp
-	${CXX} -c ${CXXFLAGS} ${INCS} $< -o $@
-
-%.o : %.c
+%.o : %.c %.h
 	${CC} -c ${CFLAGS} ${INCS} $< -o $@
 
 clean:
-	-rm -f ${OBJS} ${LIB_OBJS} ${OUTPUT} ${LIBOUTPUT}
+	-rm -f ${OBJS} ${LIB_OBJS} ${OUTPUT} ${LIB_OUTPUT} 
