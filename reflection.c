@@ -216,7 +216,10 @@ int load_functions(src* c_src, bool debug) {
             }
             si[0] = '\0';
 
-            if(debug) print_string(src_new, "   ");
+            if(debug) {
+                print_string(src_new, "   ");
+                //if(!writeToFile("obj/generated.c", src_new)) printf("ERROR: Could not write to file obj/generated.c !!!\n");
+            }
             printf("\n");
 
             //if(true) {

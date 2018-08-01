@@ -461,3 +461,11 @@ error_state* new_error_state(int error, void* p_data) {
 void free_error_state(error_state* e_s) {
     free(e_s);
 }
+
+bool writeToFile(char* f_name, char* content) {
+    FILE* f = fopen(f_name, "w");
+    if(f == NULL) return false;
+    fprintf(f, "%s", content);
+    fclose(f);
+    return true;
+}
