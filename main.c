@@ -4,17 +4,20 @@
 #include <stdbool.h>
 #include <time.h>
 
+#include "dynamic_source.h"
+
 #include "reflection.h"
-#include "hashmap.h"
-#include "c_source_reader.h"
+//#include "hashmap.h"
+//#include "c_source_reader.h"
 #include "c_source_data_functions.h"
-//#include "read_from_line.h"
+////#include "read_from_line.h"
 #include "scan_command_line.h"
 #include "utile.h"
 #include "examples_test.h"
 #include "scan_type_test.h"
 
 static const char QUIT[] = "quit";
+static char* FILES[] = {"t_file_1.c", "t_file_2.c"};
 
 bool debug = false;
 bool user_debug = false;
@@ -23,6 +26,7 @@ void print_help() {
     printf("\nKommandos:\n-------------\n");
     printf("help|-h                                  - Ausgabe der Kommandos\n");
     printf("set debug true|false                     - Aktivieren oder Deaktivieren der Debug-Ausgaben\n");
+    printf("set console_debug true|false             - Aktivieren oder Deaktivieren der Console-Ausgaben\n");
     printf("<c-source-file>                          - C-Datei die geladen werden soll, es wird versucht die Funktionen zu extrahieren (z.B. functions.c)\n");
     printf("reload <c-source-file>                   - C-Datei die (erneut)geladen werden soll, alte Version wird entfernt\n");
     printf("find <function-name>                     - Pruefen ob die Funktion bekannt ist (geladen wurde)\n");
@@ -30,9 +34,206 @@ void print_help() {
     printf("test_functions|test_f                    - fuehrt ein paar Test-Funktionen aus (aus functions.c und pointer_test.c)\n");
     printf("refection_test|ref_t                     - Es werden per Tiny-C Funktionen geladen und ausgefüht.\n");
     printf("run_test_types|run_tt                    - Es wird die Funtion scan_params(..) getestet.\n");
+    printf("run_m <loops>                            - Lädt abwechselnd t_func_1.c und t_func_2.c loops mal und gibt die Zeit aus.");
     printf("q|%s                                   - beendet das Programm\n", QUIT);
 }
 
+int main()
+{
+    //reflection_test();
+    //test_functions();
+
+    int e, l, n;
+    char * line;
+    src_function* s_f;
+    f_header* f_h;
+    tcc_function* func = load_readLine();
+    char* (*readLine)(FILE*) = func->f;
+    char f_name[100];
+    char space[20];
+    char* lp;
+    clock_t begin, end;
+    float z;
+    //function and source memory
+    dyn_src* dynSrc = new_dynamic_source(true);
+    bool is_reload = false;
+
+    bool work = true;
+    print_help();
+    while(work) {
+        //printf("\n[while begin] press any key.... \n");
+        //getchar();
+        printf("\nWaiting for input:> ");
+        line = readLine(stdin);
+        //line = readLine();
+        if(strlen(line) == 0) continue;
+        switch(line[0]) {
+            case '-':
+                if(strcmp(line, "-h") == 0) {
+                    print_help();
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'c':
+                if((e = sscanf(line, "call%[ ]%[^ ]", space, f_name)) > 0) {
+                    printf("[%d] call function: %s\n", e, f_name);
+                    lp = line + 4 + strlen(space) + strlen(f_name);
+                    s_f = find_func(dynSrc, f_name);
+                    if(s_f == NULL) printf("%s", dynSrc->error_msg);
+                    else {
+                        print_reduced_src_function(s_f, "");
+                        f_h = s_f->header;
+                        t_value* param = scan_param(lp, s_f, user_debug);
+                        print_t_value(param, f_h->parameter_n, f_h->parameter_types, "   ");
+                        //call function with param
+                        t_value result = s_f->func(param);
+                        print_t_value(&result, 1, &(f_h->return_type), "result:");
+                        //free param/return values
+                        printf("[call] free params ...\n");
+                        free_t_value_array(param, f_h->parameter_n, f_h->parameter_types);
+                        if(f_h->return_is_ref_type == true) {
+                            printf("[call] don't free return value, can reference an input parameter ...\n");
+                        } else {
+                            printf("[call] free return value ...\n");
+                            free_t_value(&result, &(f_h->return_type), false);
+                        }
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'f':
+                if(strcmp(line, "find") == 0) {
+                    printf("Info: all loaded functions ...\n");
+                    print_functions_ht(dynSrc->ht_func);
+                    free(line);
+                    continue;
+                } else if((e = sscanf(line, "find%[ ]%[^ ]", space, f_name)) > 0) {
+                    printf("[%d] find function: %s\n", e, f_name);
+                    s_f = find_func(dynSrc, f_name);
+                    if(s_f == NULL) printf("%s", dynSrc->error_msg);
+                    else {
+                        print_src_function(s_f, "");
+                        //print_src_code_ref(s_f->src_r, "function->", "   ");
+                        //print_src_code_ref(s_f->header->src_r, "header->", "   ");
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'h':
+                if(strcmp(line, "help") == 0) {
+                    print_help();
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'q':
+                if(strlen(line) == 1 || strcmp(line, QUIT) == 0) {
+                    work = false;
+                    free(line);
+                    continue;
+                }
+                break;
+            case 'r':
+                if(strcmp(line, "reflection_test") == 0 || strcmp(line, "ref_t") == 0) {
+                    reflection_test();
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "run_test_types") == 0 || strcmp(line, "run_tt") == 0) {
+                    run_test_types();
+                    free(line);
+                    continue;
+                } else if((e = sscanf(line, "reload%[ ]%[^ ]", space, f_name)) > 0) {
+                    printf("[%d] reload src: %s\n", e, f_name);
+                    free(line);
+                    line = copy_string(f_name);
+                    is_reload = true;
+                } else if((e = sscanf(line, "run_m %d", &l)) > 0) {
+                    if(l < 0) l = -l;
+                    printf("Start loop for %d\n", l);
+                    my_clock(l);
+                    for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) dynamic_load_from_file(dynSrc, FILES[e], false);
+                    my_clock(l);
+                    free(line);
+                    continue;
+                }
+                break;
+            case 's':
+                if(strcmp(line, "set debug true") == 0) {
+                    if(!dynSrc->debug) {
+                        dynSrc->debug = true;
+                        printf("info: debug enabled\n");
+                    }
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "set debug false") == 0) {
+                    if(dynSrc->debug) {
+                        dynSrc->debug = false;
+                        printf("info: debug disabled\n");
+                    }
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "set console_debug true") == 0) {
+                    if(!dynSrc->print_command_line_info) {
+                        dynSrc->print_command_line_info = true;
+                        printf("info: console info enabled\n");
+                    }
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "set console_debug false") == 0) {
+                    if(dynSrc->print_command_line_info) {
+                        dynSrc->print_command_line_info = false;
+                        printf("info: console info disabled\n");
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
+            case 't':
+                if(strcmp(line, "test_functions") == 0 || strcmp(line, "test_f") == 0) {
+                    test_functions();
+                    free(line);
+                    continue;
+                }
+                break;
+        }
+
+        printf("echo: %s\n",line);
+        if(dynSrc->print_command_line_info || dynSrc->debug) {
+            my_clock(0);
+            e = dynamic_load_from_file_debug(dynSrc, line, is_reload);
+            my_clock(0);
+        } else {
+            my_clock(0);
+            e = dynamic_load_from_file(dynSrc, line, is_reload);
+            my_clock(0);
+        }
+        //printf("begin:                         %d\n", begin);
+        //printf("end:                           %d\n", end);
+        if(e == NO_ERROR) printf("..done !\n");
+        else printf("%s", dynSrc->error_msg);
+
+        free(line);
+        //printf("\n[free line] press any key.... \n");
+        //getchar();
+    }
+    printf("\ngood bye..\n");
+
+    //Funktionsspeicher  und Src-Speicher freigeben
+    printf("free dyn_src dynSrc:\n");
+    free_dynamic_source(dynSrc);
+
+    //clean TCCState
+    free_tcc_function(func);
+
+    return 0;
+}
+
+
+
+/*
 int main()
 {
     //reflection_test();
@@ -231,31 +432,6 @@ int main()
             printf("INFO: load_functions returned with <= 0, therefore there are no functions to add or an problem occured!\n");
         }
 
-
-        /*printf("\nsrc(n = %d, allocated_n = %d): \n", c_src->n, c_src->allocated_n);
-        for(i=0, n=0; i<c_src->n; ++i) {
-            if(has_unkown_types(c_src->functions[i]) == false) {
-                hashmap_put(ht_func, get_name(c_src->functions[i]), c_src->functions[i]);
-                printf("Added[%d:%d]: %s", i, ++n, (user_debug ? "\n" : ""));
-                if(user_debug) print_src_function(c_src->functions[i], "   ");
-                else print_reduced_src_function(c_src->functions[i], "");
-                print_string(create_function_wrapper("fwrapper", c_src->functions[i]), "   ");
-            } else {
-                //printf("Skipped[%d]: %s", i, (user_debug ? "\n" : ""));
-                //if(user_debug) print_src_function(c_src->functions[i], "   ");
-                //else print_reduced_src_function(c_src->functions[i], "");
-                printf("Skipped[%d]: \n", i);
-                print_src_function(c_src->functions[i], "   ");
-            }
-        }*/
-        /*for(i=0; i < c_src->n; ++i) {
-            hashmap_put(ht_func, get_name(c_src->functions[i]), c_src->functions[i]);
-            printf("\n%s\n", create_function_wrapper("fwrapper", c_src->functions[i]));
-
-            //e = hashmap_get(ht_func, get_name(c_src->functions[i]), &s_f);
-            //printf("add[%d]: %s\n", e, get_name(s_f));
-        }*/
-
         if(n > 0) {
             hashmap_put(ht_src, c_src->name, c_src);
             printf("\nInfo: cached %d functions [src.name = %s]\n", hashmap_length(ht_func), c_src->name);
@@ -282,6 +458,5 @@ int main()
 
     return 0;
 }
-
-
+*/
 

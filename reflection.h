@@ -29,7 +29,7 @@ tcc_function* load_readLine(void);
 
 t_value (*load_function(src_function* s_f))(t_value*);
 
-int load_functions(src* c_src, bool debug);
+int load_functions(src* c_src, bool pToCmd, bool debug);
 
 void sprint_t_value_var(e_type* e_t, char* dest, int index, char* var_name, bool is_array);
 

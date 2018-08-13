@@ -180,7 +180,7 @@ void free_src_function(src_function* s_f, bool debug) {
             if(s_f->state != NULL) {
                 tcc_state* state = s_f->state;
                 if(state->f_count <= 1) {
-                    printf("free func [free tcc_state]\n");
+                    //printf("free func [free tcc_state]\n");
                     free(state->s);
                     free(state);
                 } else

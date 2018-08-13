@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "c_source_reader.h"
 #include "utile.h"
@@ -468,4 +469,27 @@ bool writeToFile(char* f_name, char* content) {
     fprintf(f, "%s", content);
     fclose(f);
     return true;
+}
+/**
+ * https://www.tu-chemnitz.de/urz/archiv/kursunterlagen/C/kap3/zeitmess.htm
+ */
+void my_clock(int loops) {
+    static bool measure = false;
+    static clock_t begin;
+    static clock_t end;
+    if(measure) {
+        end = clock();
+        measure = false;
+        printf("clocks zwischen begin und end: %d\n", end - begin);
+        float z=end - begin;
+        z/=CLOCKS_PER_SEC;
+        printf("Zeit zwischen begin und end:   %f Sekunden\n", z);
+        printf("CLOCKS_PER_SEC:                %d\n", CLOCKS_PER_SEC);
+        if(loops > 0) {
+            printf("Zeit pro loop:                 %f Sekunden\n", z / loops);
+        }
+    } else {
+        measure = true;
+        begin = clock();
+    }
 }

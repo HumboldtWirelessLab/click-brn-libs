@@ -45,7 +45,7 @@ all: ${OUTPUT}
 #****************************************************************************
 
 SRCS := examples_test.c functions.c main.c pointer_test.c scan_type_test.c
-LIB_SRCS := buffered_reader.c c_source_data_functions.c c_source_reader.c hashmap.c  read_from_line.c  reflection.c  scan_command_line.c  utile.c
+LIB_SRCS := buffered_reader.c c_source_data_functions.c c_source_reader.c hashmap.c  read_from_line.c  reflection.c  scan_command_line.c  utile.c dynamic_source.c
 
 # Add on the sources for libraries
 SRCS := ${SRCS}

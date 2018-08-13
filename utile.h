@@ -82,4 +82,6 @@ void free_error_state(error_state* e_s);
 
 bool writeToFile(char* f_name, char* content);
 
+void my_clock();
+
 #endif // UTILE_H_INCLUDED

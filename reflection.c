@@ -144,7 +144,7 @@ t_value (*load_function(src_function* s_f))(t_value*) {
     return func;
 }
 
-int load_functions(src* c_src, bool debug) {
+int load_functions(src* c_src, bool pToCmd, bool debug) {
     static const char WRAPPER_PREFIX[] = "f_wrapper_";
     static const int W_LEN = 10;
     if(c_src != NULL) {
@@ -177,9 +177,11 @@ int load_functions(src* c_src, bool debug) {
                     functions[added_functions] = s_f;
                     f_h = s_f->header;
                     //hashmap_put(ht, f_h->name, c_src->functions[i]);
-                    printf("[0] Added[%d:%d]: %s", i, ++n, (debug ? "\n" : ""));
-                    if(debug) print_src_function(c_src->functions[i], "   ");
-                    else print_reduced_src_function(c_src->functions[i], "");
+                    if(pToCmd) {
+                        printf("[0] Added[%d:%d]: %s", i, ++n, (debug ? "\n" : ""));
+                        if(debug) print_src_function(c_src->functions[i], "   ");
+                        else print_reduced_src_function(c_src->functions[i], "");
+                    }
                     len = W_LEN + strlen(f_h->name);
                     wrapper_names[added_functions] = malloc(sizeof(char) * (len + 1));
                     //si = wrapper_names[added_functions];
@@ -210,8 +212,10 @@ int load_functions(src* c_src, bool debug) {
                     //printf("Skipped[%d]: %s", i, (user_debug ? "\n" : ""));
                     //if(user_debug) print_src_function(c_src->functions[i], "   ");
                     //else print_reduced_src_function(c_src->functions[i], "");
-                    printf("Skipped[%d]: \n", i);
-                    print_src_function(c_src->functions[i], "   ");
+                    if(pToCmd) {
+                        printf("Skipped[%d]: \n", i);
+                        print_src_function(c_src->functions[i], "   ");
+                    }
                 }
             }
             si[0] = '\0';
@@ -242,7 +246,7 @@ int load_functions(src* c_src, bool debug) {
                 tcc_set_output_type(s, TCC_OUTPUT_MEMORY);
 
                 if (tcc_compile_string(s, src_new) == -1) {
-                    printf("ERROR: tcc_compile_string(s, src) == -1\n");
+                    if(pToCmd) printf("ERROR: tcc_compile_string(s, src) == -1\n");
                     tcc_delete(s);
                     free(state);
                     free(src_new);
@@ -251,7 +255,7 @@ int load_functions(src* c_src, bool debug) {
 
                 /* relocate the code */
                 if (tcc_relocate(s, TCC_RELOCATE_AUTO) < 0) {
-                    printf("ERROR: tcc_relocate(s, TCC_RELOCATE_AUTO) < 0\n");
+                    if(pToCmd) printf("ERROR: tcc_relocate(s, TCC_RELOCATE_AUTO) < 0\n");
                     tcc_delete(s);
                     free(state);
                     free(src_new);
@@ -263,7 +267,7 @@ int load_functions(src* c_src, bool debug) {
                     // get entry symbol
                     s_f->func = tcc_get_symbol(s, wrapper_names[n]);
                     if (!s_f->func) {
-                        printf("ERROR: tcc_get_symbol(s, \"%s\") failed !!!\n", wrapper_names[n]);
+                        if(pToCmd) printf("ERROR: tcc_get_symbol(s, \"%s\") failed !!!\n", wrapper_names[n]);
                         free(wrapper_names[n]);
                         ++fail_count;
                         continue;
@@ -271,7 +275,7 @@ int load_functions(src* c_src, bool debug) {
                     s_f->c_src = (struct src*)c_src;
                     state->f_count++;
                     s_f->state = state;
-                    printf("[%d] loaded %s (%s) successfully!\n", n, s_f->header->name, wrapper_names[n]);
+                    if(pToCmd) printf("[%d] loaded %s (%s) successfully!\n", n, s_f->header->name, wrapper_names[n]);
                     free(wrapper_names[n]);
                 }
 
