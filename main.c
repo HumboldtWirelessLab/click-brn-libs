@@ -52,8 +52,6 @@ int main()
     char f_name[100];
     char space[20];
     char* lp;
-    clock_t begin, end;
-    float z;
     //function and source memory
     dyn_src* dynSrc = new_dynamic_source(true);
     bool is_reload = false;

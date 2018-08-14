@@ -53,6 +53,7 @@ int dynamic_load_from_file(dyn_src* dynSrc, char* file, bool is_reload) {
 }
 
 int dynamic_load_from_string(dyn_src* dynSrc, char* source, bool is_reload) {
+    return NO_ERROR;
 }
 
 int dynamic_load_debug(dyn_src* dynSrc, src* c_src, bool is_reload) {
@@ -107,14 +108,13 @@ int dynamic_load_debug(dyn_src* dynSrc, src* c_src, bool is_reload) {
         if(pToCmd) printf("\nsrc(n = %d, allocated_n = %d): \n", c_src->n, c_src->allocated_n);
         src_function* o_s_f;
         src* o_s_c;
-        bool delete_src = false;
         for(i=0; i<c_src->n; ++i) {
             s_f = c_src->functions[i];
             if(s_f->state != NULL) {
                 if(hashmap_get(dynSrc->ht_func, get_name(s_f), (void**)&o_s_f) == MAP_OK) {
                     if(pToCmd) printf("function[%s] already exists, has to be deleted first.\n", get_name(s_f));
                     hashmap_remove(dynSrc->ht_func, get_name(o_s_f));
-                    o_s_c = (o_s_f->state->f_count == 1 ? o_s_f->c_src : NULL);
+                    o_s_c = (o_s_f->state->f_count == 1 ? (src *)(o_s_f->c_src) : NULL);
                     free_src_function(o_s_f, false);
                     if(o_s_c) {
                         hashmap_remove(dynSrc->ht_src, o_s_c->name);
@@ -150,7 +150,6 @@ int dynamic_load_debug(dyn_src* dynSrc, src* c_src, bool is_reload) {
  * No printf to cmd.
  */
 int dynamic_load(dyn_src* dynSrc, src* c_src, bool is_reload) {
-    bool pToCmd = dynSrc->print_command_line_info;
     int n = 0, i;
     src* find_c_src = NULL;
     src_function* s_f = NULL;
@@ -186,13 +185,12 @@ int dynamic_load(dyn_src* dynSrc, src* c_src, bool is_reload) {
         //add loaded functions to hashtable
         src_function* o_s_f;
         src* o_s_c;
-        bool delete_src = false;
         for(i=0; i<c_src->n; ++i) {
             s_f = c_src->functions[i];
             if(s_f->state != NULL) {
                 if(hashmap_get(dynSrc->ht_func, get_name(s_f), (void**)&o_s_f) == MAP_OK) {
                     hashmap_remove(dynSrc->ht_func, get_name(o_s_f));
-                    o_s_c = (o_s_f->state->f_count == 1 ? o_s_f->c_src : NULL);
+                    o_s_c = (o_s_f->state->f_count == 1 ? (src *)(o_s_f->c_src) : NULL);
                     free_src_function(o_s_f, false);
                     if(o_s_c) {
                         hashmap_remove(dynSrc->ht_src, o_s_c->name);
