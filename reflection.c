@@ -223,8 +223,8 @@ int load_functions(src* c_src, bool pToCmd, bool debug) {
             if(debug) {
                 print_string(src_new, "   ");
                 //if(!writeToFile("obj/generated.c", src_new)) printf("ERROR: Could not write to file obj/generated.c !!!\n");
+                printf("\n");
             }
-            printf("\n");
 
             //if(true) {
             //    free(src_new);

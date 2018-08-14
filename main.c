@@ -17,7 +17,7 @@
 #include "scan_type_test.h"
 
 static const char QUIT[] = "quit";
-static char* FILES[] = {"t_file_1.c", "t_file_2.c"};
+static char* FILES[] = {"t_func_1.c", "t_func_2.c"};
 
 bool debug = false;
 bool user_debug = false;
@@ -153,7 +153,7 @@ int main()
                     printf("Start loop for %d\n", l);
                     my_clock(l);
                     for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) {
-                        if(dynamic_load_from_file(dynSrc, FILES[e], false) != NO_ERROR) printf("[%d] %s\n", n, dynSrc->error_msg);
+                        if(dynamic_load_from_file(dynSrc, FILES[e], false) != NO_ERROR) printf("[%d] status=%d %s\n", n, dynSrc->last_error_state, dynSrc->error_msg);
                     }
                     my_clock(l);
                     free(line);
