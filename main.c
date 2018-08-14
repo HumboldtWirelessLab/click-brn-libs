@@ -27,6 +27,7 @@ void print_help() {
     printf("help|-h                                  - Ausgabe der Kommandos\n");
     printf("set debug true|false                     - Aktivieren oder Deaktivieren der Debug-Ausgaben\n");
     printf("set console_debug true|false             - Aktivieren oder Deaktivieren der Console-Ausgaben\n");
+    printf("set measure clock|time                   - Aktivieren ob bei der Zeitmessung in CPU-Clocks oder Mikrosekunden gemessen wird\n");
     printf("<c-source-file>                          - C-Datei die geladen werden soll, es wird versucht die Funktionen zu extrahieren (z.B. functions.c)\n");
     printf("reload <c-source-file>                   - C-Datei die (erneut)geladen werden soll, alte Version wird entfernt\n");
     printf("find <function-name>                     - Pruefen ob die Funktion bekannt ist (geladen wurde)\n");
@@ -49,6 +50,8 @@ int main()
     f_header* f_h;
     tcc_function* func = load_readLine();
     char* (*readLine)(FILE*) = func->f;
+    void (*measure)(int) = my_clock;
+    bool isMeasureCPUClocks = true;
     char f_name[100];
     char space[20];
     char* lp;
@@ -151,11 +154,11 @@ int main()
                 } else if((e = sscanf(line, "run_m %d", &l)) > 0) {
                     if(l < 0) l = -l;
                     printf("Start loop for %d\n", l);
-                    my_clock2(l);
+                    measure(l);
                     for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) {
                         if(dynamic_load_from_file(dynSrc, FILES[e], false) != NO_ERROR) printf("[%d] status=%d %s\n", n, dynSrc->last_error_state, dynSrc->error_msg);
                     }
-                    my_clock2(l);
+                    measure(l);
                     free(line);
                     continue;
                 }
@@ -189,6 +192,22 @@ int main()
                     }
                     free(line);
                     continue;
+                } else if(strcmp(line, "set measure clock") == 0) {
+                    if(!isMeasureCPUClocks) {
+                        isMeasureCPUClocks = true;
+                        measure = my_clock;
+                        printf("info: enabled measure in CPU clocks\n");
+                    }
+                    free(line);
+                    continue;
+                } else if(strcmp(line, "set measure time") == 0) {
+                    if(isMeasureCPUClocks) {
+                        isMeasureCPUClocks = false;
+                        measure = my_clock2;
+                        printf("info: set measure in microsecond\n");
+                    }
+                    free(line);
+                    continue;
                 }
                 break;
             case 't':
@@ -202,13 +221,13 @@ int main()
 
         printf("echo: %s\n",line);
         if(dynSrc->print_command_line_info || dynSrc->debug) {
-            my_clock2(0);
+            measure(0);
             e = dynamic_load_from_file_debug(dynSrc, line, is_reload);
-            my_clock2(0);
+            measure(0);
         } else {
-            my_clock2(0);
+            measure(0);
             e = dynamic_load_from_file(dynSrc, line, is_reload);
-            my_clock2(0);
+            measure(0);
         }
         //printf("begin:                         %d\n", begin);
         //printf("end:                           %d\n", end);
