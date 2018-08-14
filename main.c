@@ -152,7 +152,9 @@ int main()
                     if(l < 0) l = -l;
                     printf("Start loop for %d\n", l);
                     my_clock(l);
-                    for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) dynamic_load_from_file(dynSrc, FILES[e], false);
+                    for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) {
+                        if(dynamic_load_from_file(dynSrc, FILES[e], false) != NO_ERROR) printf("[%d] %s\n", n, dynSrc->error_msg);
+                    }
                     my_clock(l);
                     free(line);
                     continue;
