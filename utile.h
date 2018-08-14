@@ -84,4 +84,6 @@ bool writeToFile(char* f_name, char* content);
 
 void my_clock();
 
+void my_clock2();
+
 #endif // UTILE_H_INCLUDED

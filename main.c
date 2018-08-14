@@ -151,11 +151,11 @@ int main()
                 } else if((e = sscanf(line, "run_m %d", &l)) > 0) {
                     if(l < 0) l = -l;
                     printf("Start loop for %d\n", l);
-                    my_clock(l);
+                    my_clock2(l);
                     for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) {
                         if(dynamic_load_from_file(dynSrc, FILES[e], false) != NO_ERROR) printf("[%d] status=%d %s\n", n, dynSrc->last_error_state, dynSrc->error_msg);
                     }
-                    my_clock(l);
+                    my_clock2(l);
                     free(line);
                     continue;
                 }
@@ -202,13 +202,13 @@ int main()
 
         printf("echo: %s\n",line);
         if(dynSrc->print_command_line_info || dynSrc->debug) {
-            my_clock(0);
+            my_clock2(0);
             e = dynamic_load_from_file_debug(dynSrc, line, is_reload);
-            my_clock(0);
+            my_clock2(0);
         } else {
-            my_clock(0);
+            my_clock2(0);
             e = dynamic_load_from_file(dynSrc, line, is_reload);
-            my_clock(0);
+            my_clock2(0);
         }
         //printf("begin:                         %d\n", begin);
         //printf("end:                           %d\n", end);

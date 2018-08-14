@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <time.h>
+#include <sys/time.h>
 
 #include "c_source_reader.h"
 #include "utile.h"
@@ -472,7 +473,15 @@ bool writeToFile(char* f_name, char* content) {
 }
 /**
  * https://www.tu-chemnitz.de/urz/archiv/kursunterlagen/C/kap3/zeitmess.htm
- */
+ *
+ *************************************************************************
+ * - Variante 1 - mit Bibliotheksfunktion clock()                        *
+ * - clock() liefert die vom Programm bisher benutzte Prozessorzeit      *
+ * - der Teiler CLOCKS_PER_SEC ist maschinenabhängig und spezifiziert,   *
+ *   wieviel Uhr-Ticks auf der jeweiligen Maschine pro Sekunde vergehen  *
+ * - CLOCKS_PER_SEC definiert also die clock_t-Einheiten pro Sekunde     *
+ * - bei Linux (i[345..]86 glibc):     #define CLOCKS_PER_SEC  1000000   *
+ *************************************************************************/
 void my_clock(int loops) {
     static bool measure = false;
     static clock_t begin;
@@ -491,5 +500,50 @@ void my_clock(int loops) {
     } else {
         measure = true;
         begin = clock();
+    }
+}
+
+/*************************************************************************
+ * - Variante 2 - mit Systemruf gettimeofday()                           *
+ * - gettimeofday() stellt u.a. die Struktur timeval bereit              *
+ *      struct timeval {                                                 *
+ *           long tv_sec;           Sekunden seit 1.1.1970               *
+ *           long tv_usec;          Mikrosekunden                        *
+ *      };                                                               *
+ *************************************************************************/
+void my_clock2(int loops) {
+    static bool measure = false;
+    static struct timeval begin;
+    static struct timeval end;
+    static long seconds, useconds;
+    if(measure) {
+        if(gettimeofday(&end,(struct timezone *)0)) {
+            fprintf(stderr, "can not get time\n");
+            end.tv_sec = 0;
+            end.tv_usec = 0;
+        } else {
+            //printf("begin:        %ld sec %ld usec\n", begin.tv_sec, begin.tv_usec);
+            //printf("end  :        %ld sec %ld usec\n", end.tv_sec, end.tv_usec);
+            seconds = end.tv_sec - begin.tv_sec;
+            useconds = end.tv_usec - begin.tv_usec;
+            if(useconds < 0) {
+                useconds += 1000000;
+                seconds--;
+            }
+            //printf("Dauer:         %ld sec %ld usec\n\n", seconds, useconds);
+            double z = seconds + useconds / 1000000.0;
+            printf("Zeit in sec:   %f\n", z);
+            if(loops > 0) {
+                printf("Zeit pro loop: %f Sekunden\n", z / loops);
+            }
+        }
+        measure = false;
+    } else {
+        measure = true;
+        if(gettimeofday(&begin,(struct timezone *)0)) {
+            fprintf(stderr, "can not get time\n");
+            begin.tv_sec = 0;
+            begin.tv_usec = 0;
+        }
     }
 }
