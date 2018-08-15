@@ -512,6 +512,9 @@ void my_clock(int loops) {
  *      };                                                               *
  *************************************************************************/
 void my_clock2(int loops) {
+#if __tcc__
+    my_clock(loops);
+#else
     static bool measure = false;
     static struct timeval begin;
     static struct timeval end;
@@ -546,4 +549,5 @@ void my_clock2(int loops) {
             begin.tv_usec = 0;
         }
     }
+#endif // __tcc__
 }

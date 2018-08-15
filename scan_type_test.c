@@ -38,7 +38,7 @@ void run_test_types() {
     f_header* f_h = NULL;
 
     printf("[1] reading source file %s :\n", str_file);
-    s_c = read_source(str_file, debug);
+    s_c = read_source_from_file(str_file, debug);
     if(s_c == NULL) {
         printf("info: unkown file [%s]\n", str_file);
         return;

@@ -4,6 +4,7 @@
 *.depend
 bin/**/*
 obj/**/*
+cached/**/*
 makefile.local
 libtiny_c.a
 tiny_c

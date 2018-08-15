@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -7,7 +7,7 @@
 #include "c_source_data_functions.h"
 #include "buffered_reader.h"
 #include "utile.h"
-
+#include "fmemopen.h"
 
 
 // trim spaces from left
@@ -116,8 +116,21 @@ unsigned int trim_and_remove_comments(char *line, char *ptr_line, unsigned int *
     return 0;
 }
 
-src* read_source(char* file_name, bool debug) {
-    FILE *file;
+src* read_source_from_file(char* file_name, bool debug) {
+    FILE* file = fopen(file_name, "r");
+    return read_source(file, file_name, debug);
+}
+
+src* read_source_from_string(char* source, char* source_name, bool debug) {
+    FILE* stream;
+    stream = my_fmemopen (source, strlen (source), "r");
+    return read_source(stream, source_name, debug);
+}
+
+/**
+ * Close the file after reading.
+ */
+src* read_source(FILE *file, char* file_name, bool debug) {
     unsigned int has_comment = 0, is_multi_line_comment = 0;
     char line[500];
     int line_length, file_size;
@@ -126,7 +139,7 @@ src* read_source(char* file_name, bool debug) {
     src* all_f = NULL;
     if(debug) printf("\n");
 
-    file = fopen(file_name, "r");
+    //file = fopen(file_name, "r");
     if(file != NULL) {
         //initialize string buffer
         file_size = get_file_length(file);
@@ -197,6 +210,97 @@ src* read_source(char* file_name, bool debug) {
 
     return all_f;
 }
+
+/**
+ * Close the file after reading.
+ */
+ /*
+src* read_source_from_string(char* source, char* source_name, bool debug) {
+    unsigned int has_comment = 0, is_multi_line_comment = 0;
+    char line[500];
+    char* li = source;
+    int line_length, source_size;
+    src_code* s_c;
+    src* all_f = NULL;
+    if(debug) printf("\n");
+
+    if(source != NULL) {
+        source_size = strlen(source);
+        if(source_size > 0) {
+            //initialize string buffer
+            all_f = create_src(source_size, DEFAULT_SRC_FUNCTION_CAPACITY);
+            s_c = all_f->src;
+            //read source line by line
+            int n;
+            while(*li) {
+                //read one line
+                n = 0;
+                while(*li && *li != '\n') line[n++] = *li++;
+                line[n] = '\0';
+                printf("[%d] %s\n", n, line);
+                if(*li) ++li;
+                //trim spaces and remove comments
+                char ptr_line[500] = "";
+                if(trim_and_remove_comments(line, ptr_line, &has_comment, &is_multi_line_comment, debug)) continue;
+
+                //ist was übrig von der Zeile
+                if(strlen(ptr_line) > 0) {
+                    if(ptr_line[0] == '#' && !(strstr(ptr_line, "#define") == ptr_line)) {//remove simple macros like define, include ...
+                        if(s_c->length > 0) {
+                            s_c->src[0] = '\0';
+                            s_c->length = 0;
+                            s_c->lines = 0;
+                        }
+                        if(debug) printf("skipped: %s\n", ptr_line);
+                    } else {
+                        ++(s_c->lines);
+                        line_length = strlen(ptr_line);
+                        memcpy(&(s_c->src[s_c->length]), ptr_line, line_length);
+                        //if(s_f->lines > 1) strcat(s_f->s, line);
+                        //else strcpy(s_f->s, line);
+                        s_c->length += line_length;
+                        s_c->src[s_c->length] = '\n';
+                        ++(s_c->length);
+
+                        if(ptr_line[0] == '#') {//define
+                            all_f->src_start_pos = s_c->length;
+                        }
+
+                        if(debug) {
+                            if(line_length < 10) {
+                                if(s_c->lines < 10) printf("00%i : __%i : %s\n", s_c->lines, line_length,ptr_line);
+                                else if(s_c->lines < 100) printf("0%i : __%i : %s\n", s_c->lines, line_length,ptr_line);
+                                else printf("%i : __%i : %s\n", s_c->lines, line_length,ptr_line);
+                            } else if(line_length < 100) {
+                                if(s_c->lines < 10) printf("00%i : _%i : %s\n", s_c->lines, line_length,ptr_line);
+                                else if(s_c->lines < 100) printf("0%i : _%i : %s\n", s_c->lines, line_length,ptr_line);
+                                else printf("%i : _%i : %s\n", s_c->lines, line_length,ptr_line);
+                            } else {
+                                if(s_c->lines < 10) printf("00%i : %i : %s\n", s_c->lines, line_length,ptr_line);
+                                else if(s_c->lines < 100) printf("0%i : %i : %s\n", s_c->lines, line_length,ptr_line);
+                                else printf("%i : %i : %s\n", s_c->lines, line_length,ptr_line);
+                            }
+                        }
+                    }
+                    //printf("%i - %i\n", s_f->length, file_size);
+                } else if(debug) {
+                    if(has_comment || is_multi_line_comment) printf("skipped: %s", line);
+                    else printf("skipped: \n");
+                }
+            }
+            s_c->src[s_c->length] = '\0';
+            if(debug) printf("%i - %i", s_c->length, source_size);
+
+            if(s_c->length > 0) {
+                all_f->name = copy_string(source_name);
+            }
+            //all_f->functions[all_f->n] = s_f;
+            //++(all_f->n);
+        }
+    }
+
+    return all_f;
+}*/
 
 bool convert_ref_type(char* src, bool debug) {
     if(debug) printf("[convert ref type] %s\n", src);

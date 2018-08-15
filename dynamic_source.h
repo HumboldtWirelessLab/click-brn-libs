@@ -36,7 +36,9 @@ int dynamic_load_from_file_debug(dyn_src* dynSrc, char* file, bool is_reload);
 
 int dynamic_load_from_file(dyn_src* dynSrc, char* file, bool is_reload);
 
-int dynamic_load_from_string(dyn_src* dynSrc, char* source, bool is_reload);
+int dynamic_load_from_string_debug(dyn_src* dynSrc, char* source, char* source_name, bool is_reload);
+
+int dynamic_load_from_string(dyn_src* dynSrc, char* source, char* source_name, bool is_reload);
 
 src_function* find_func(dyn_src* dynSrc, char* f_name);
 

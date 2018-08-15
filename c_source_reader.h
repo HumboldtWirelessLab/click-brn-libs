@@ -1,6 +1,7 @@
 #ifndef C_SOURCE_READER_H_INCLUDED
 #define C_SOURCE_READER_H_INCLUDED
 
+#include <stdio.h>
 #include <stdbool.h>
 #include "c_source_data_types.h"
 
@@ -19,11 +20,18 @@ static const char KW_P[] = "*";
 
 static const int DEFAULT_SRC_FUNCTION_CAPACITY = 5;
 
-
+/**
+ * Einlesen einer Quellcodedatei, öffnet Datei und ruft read_source(...) auf.
+ */
+src* read_source_from_file(char* file_name, bool debug);
+/**
+ * Einlesen eines Quellcodestrings, öffnet Dateistream auf den Quellcodestring und ruft read_source(...) auf.
+ */
+src* read_source_from_string(char* source, char* source_name, bool debug);
 /**
  * Einlesen einer Quellcodedatei, ablegen in einem src-Struct und Pointer auf dieses zurückgeben.
  */
-src* read_source(char* file_name, bool debug);
+src* read_source(FILE* file, char* file_name, bool debug);
 
 /**
  * Generiert aus einer Funktionsheader-Zeichenkette (s_h) ein f_header-Struct mit Infos zu

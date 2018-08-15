@@ -7,7 +7,7 @@
 #include "dynamic_source.h"
 
 #include "reflection.h"
-//#include "hashmap.h"
+#include "samples.h"
 //#include "c_source_reader.h"
 #include "c_source_data_functions.h"
 ////#include "read_from_line.h"
@@ -29,13 +29,15 @@ void print_help() {
     printf("set console_debug true|false             - Aktivieren oder Deaktivieren der Console-Ausgaben\n");
     printf("set measure clock|time                   - Aktivieren ob bei der Zeitmessung in CPU-Clocks oder Mikrosekunden gemessen wird\n");
     printf("<c-source-file>                          - C-Datei die geladen werden soll, es wird versucht die Funktionen zu extrahieren (z.B. functions.c)\n");
+    printf("%s                                - C-Quellcodestring der geladen werden soll, ...\n", C_EXAMPLE_NAME);
     printf("reload <c-source-file>                   - C-Datei die (erneut)geladen werden soll, alte Version wird entfernt\n");
     printf("find <function-name>                     - Pruefen ob die Funktion bekannt ist (geladen wurde)\n");
     printf("call <function-name> [param1 param2 ...] - Aufruf der Funktion mit entsprechenden Parameter, sofern verlangt.\n");
     printf("test_functions|test_f                    - fuehrt ein paar Test-Funktionen aus (aus functions.c und pointer_test.c)\n");
     printf("refection_test|ref_t                     - Es werden per Tiny-C Funktionen geladen und ausgefüht.\n");
     printf("run_test_types|run_tt                    - Es wird die Funtion scan_params(..) getestet.\n");
-    printf("run_m <loops>                            - Lädt abwechselnd t_func_1.c und t_func_2.c loops mal und gibt die Zeit aus.");
+    printf("run_m <loops>                            - Laedt abwechselnd t_func_1.c und t_func_2.c loops mal und gibt die Zeit aus.\n");
+    printf("run_s <loops>                            - Laedt abwechselnd die Quellcodestrings aus samples.h .\n");
     printf("q|%s                                   - beendet das Programm\n", QUIT);
 }
 
@@ -104,6 +106,22 @@ int main()
                     continue;
                 }
                 break;
+            case 'C':
+                if(strcmp(line, C_EXAMPLE_NAME) == 0) {
+                    //printf("scan c_example: \n%s\n", C_EXAMPLE);
+                    if(dynSrc->print_command_line_info || dynSrc->debug) {
+                        measure(0);
+                        e = dynamic_load_from_string_debug(dynSrc, C_EXAMPLE_1, C_EXAMPLE_NAME_1, true);
+                        measure(0);
+                    } else {
+                        measure(0);
+                        e = dynamic_load_from_string(dynSrc, C_EXAMPLE_1, C_EXAMPLE_NAME_1, true);
+                        measure(0);
+                    }
+                    free(line);
+                    continue;
+                }
+                break;
             case 'f':
                 if(strcmp(line, "find") == 0) {
                     printf("Info: all loaded functions ...\n");
@@ -157,6 +175,20 @@ int main()
                     measure(l);
                     for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) {
                         if(dynamic_load_from_file(dynSrc, FILES[e], false) != NO_ERROR) printf("[%d] status=%d %s\n", n, dynSrc->last_error_state, dynSrc->error_msg);
+                    }
+                    measure(l);
+                    free(line);
+                    continue;
+                } else if((e = sscanf(line, "run_s %d", &l)) > 0) {
+                    if(l < 0) l = -l;
+                    printf("Start string source code loop for %d\n", l);
+                    measure(l);
+                    for(n = 0, e = 0;n < l; ++n, ++e ,e %= 2) {
+                        if(e == 0) {
+                            if(dynamic_load_from_string(dynSrc, C_EXAMPLE_1, C_EXAMPLE_NAME_1, true) != NO_ERROR) printf("[%d] status=%d %s\n", n, dynSrc->last_error_state, dynSrc->error_msg);
+                        } else {
+                            if(dynamic_load_from_string(dynSrc, C_EXAMPLE_2, C_EXAMPLE_NAME_2, true) != NO_ERROR) printf("[%d] status=%d %s\n", n, dynSrc->last_error_state, dynSrc->error_msg);;
+                        }
                     }
                     measure(l);
                     free(line);

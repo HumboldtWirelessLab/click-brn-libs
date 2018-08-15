@@ -29,7 +29,7 @@ void free_dynamic_source(dyn_src* dynSrc) {
 
 int dynamic_load_from_file_debug(dyn_src* dynSrc, char* file, bool is_reload) {
     //try to read file
-    src* c_src = read_source(file, dynSrc->debug);
+    src* c_src = read_source_from_file(file, dynSrc->debug);
     if(c_src == NULL) {
         sprintf(dynSrc->error_msg, "info: unkown/incomplete command or file [%s]\n", file);
         //if(dynSrc->print_command_line_info) printf("%s", dynSrc->error_msg);
@@ -42,7 +42,7 @@ int dynamic_load_from_file_debug(dyn_src* dynSrc, char* file, bool is_reload) {
 
 int dynamic_load_from_file(dyn_src* dynSrc, char* file, bool is_reload) {
     //try to read file
-    src* c_src = read_source(file, dynSrc->debug);
+    src* c_src = read_source_from_file(file, dynSrc->debug);
     if(c_src == NULL) {
         sprintf(dynSrc->error_msg, "info: unkown/incomplete command or file [%s]\n", file);
         dynSrc->last_error_state = ERROR_FILE_NOT_FOUND;
@@ -52,8 +52,27 @@ int dynamic_load_from_file(dyn_src* dynSrc, char* file, bool is_reload) {
     return dynamic_load(dynSrc, c_src, is_reload);
 }
 
-int dynamic_load_from_string(dyn_src* dynSrc, char* source, bool is_reload) {
-    return NO_ERROR;
+int dynamic_load_from_string_debug(dyn_src* dynSrc, char* source, char* source_name, bool is_reload) {
+    //printf("dynamic_load_from_string(...\n%s\n", source);
+    src* c_src = read_source_from_string(source, source_name, dynSrc->debug);
+    if(c_src == NULL) {
+        sprintf(dynSrc->error_msg, "info: unkown/incomplete source [%s]\n", source_name);
+        dynSrc->last_error_state = ERROR_FILE_NOT_FOUND;
+
+        return dynSrc->last_error_state;
+    }
+    return dynamic_load_debug(dynSrc, c_src, is_reload);
+}
+
+int dynamic_load_from_string(dyn_src* dynSrc, char* source, char* source_name, bool is_reload) {
+    src* c_src = read_source_from_string(source, source_name, dynSrc->debug);
+    if(c_src == NULL) {
+        sprintf(dynSrc->error_msg, "info: unkown/incomplete source [%s]\n", source_name);
+        dynSrc->last_error_state = ERROR_FILE_NOT_FOUND;
+
+        return dynSrc->last_error_state;
+    }
+    return dynamic_load(dynSrc, c_src, is_reload);
 }
 
 int dynamic_load_debug(dyn_src* dynSrc, src* c_src, bool is_reload) {
