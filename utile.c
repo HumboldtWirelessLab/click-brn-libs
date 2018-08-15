@@ -493,7 +493,7 @@ void my_clock(int loops) {
         float z=end - begin;
         z/=CLOCKS_PER_SEC;
         printf("Zeit zwischen begin und end:   %f Sekunden\n", z);
-        printf("CLOCKS_PER_SEC:                %d\n", CLOCKS_PER_SEC);
+        printf("CLOCKS_PER_SEC:                %ld\n", CLOCKS_PER_SEC);
         if(loops > 0) {
             printf("Zeit pro loop:                 %f Sekunden\n", z / loops);
         }
