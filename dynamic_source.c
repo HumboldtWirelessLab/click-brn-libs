@@ -54,7 +54,7 @@ int dynamic_load_from_file(dyn_src* dynSrc, char* file, bool is_reload) {
 
 int dynamic_load_from_string_debug(dyn_src* dynSrc, char* source, char* source_name, bool is_reload) {
     //printf("dynamic_load_from_string(...\n%s\n", source);
-    src* c_src = read_source_from_string(source, source_name, dynSrc->debug);
+    src* c_src = read_source_from_string_2(source, source_name, dynSrc->debug);
     if(c_src == NULL) {
         sprintf(dynSrc->error_msg, "info: unkown/incomplete source [%s]\n", source_name);
         dynSrc->last_error_state = ERROR_FILE_NOT_FOUND;
@@ -65,7 +65,7 @@ int dynamic_load_from_string_debug(dyn_src* dynSrc, char* source, char* source_n
 }
 
 int dynamic_load_from_string(dyn_src* dynSrc, char* source, char* source_name, bool is_reload) {
-    src* c_src = read_source_from_string(source, source_name, dynSrc->debug);
+    src* c_src = read_source_from_string_2(source, source_name, dynSrc->debug);
     if(c_src == NULL) {
         sprintf(dynSrc->error_msg, "info: unkown/incomplete source [%s]\n", source_name);
         dynSrc->last_error_state = ERROR_FILE_NOT_FOUND;

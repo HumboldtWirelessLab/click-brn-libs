@@ -121,6 +121,9 @@ src* read_source_from_file(char* file_name, bool debug) {
     return read_source(file, file_name, debug);
 }
 
+/**
+ * Uses my_fmemopen from fmemopen.c .
+ */
 src* read_source_from_string(char* source, char* source_name, bool debug) {
     FILE* stream;
     stream = my_fmemopen (source, strlen (source), "r");
@@ -212,10 +215,9 @@ src* read_source(FILE *file, char* file_name, bool debug) {
 }
 
 /**
- * Close the file after reading.
+ * Reads line by line from source.
  */
- /*
-src* read_source_from_string(char* source, char* source_name, bool debug) {
+src* read_source_from_string_2(char* source, char* source_name, bool debug) {
     unsigned int has_comment = 0, is_multi_line_comment = 0;
     char line[500];
     char* li = source;
@@ -300,7 +302,7 @@ src* read_source_from_string(char* source, char* source_name, bool debug) {
     }
 
     return all_f;
-}*/
+}
 
 bool convert_ref_type(char* src, bool debug) {
     if(debug) printf("[convert ref type] %s\n", src);

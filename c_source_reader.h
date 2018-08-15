@@ -29,6 +29,10 @@ src* read_source_from_file(char* file_name, bool debug);
  */
 src* read_source_from_string(char* source, char* source_name, bool debug);
 /**
+ * Einlesen eines Quellcodestrings, Zeile bei Zeile.
+ */
+src* read_source_from_string_2(char* source, char* source_name, bool debug);
+/**
  * Einlesen einer Quellcodedatei, ablegen in einem src-Struct und Pointer auf dieses zurückgeben.
  */
 src* read_source(FILE* file, char* file_name, bool debug);
