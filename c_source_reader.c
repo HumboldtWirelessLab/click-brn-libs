@@ -239,7 +239,7 @@ src* read_source_from_string_2(char* source, char* source_name, bool debug) {
                 n = 0;
                 while(*li && *li != '\n') line[n++] = *li++;
                 line[n] = '\0';
-                printf("[%d] %s\n", n, line);
+                //printf("[%d] %s\n", n, line);
                 if(*li) ++li;
                 //trim spaces and remove comments
                 char ptr_line[500] = "";
